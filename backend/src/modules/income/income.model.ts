@@ -1,9 +1,9 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IExpense } from "./expense.interface.js";
+import { IIncome } from "./income.interface.js";
 
-export interface IExpenseDocument extends IExpense, Document { }
+export interface IIncomeDocument extends IIncome, Document { }
 
-const ExpenseSchema: Schema = new Schema(
+const IncomeSchema: Schema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         title: { type: String, required: true },
@@ -11,16 +11,10 @@ const ExpenseSchema: Schema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ["Food", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Other"]
+            enum: ["Salary", "Freelance", "Investment", "Gift", "Other"]
         },
         date: { type: Date, required: true },
-        paymentMethod: {
-            type: String,
-            required: true,
-            enum: ["Cash", "Credit Card", "Debit Card", "UPI", "Net Banking"]
-        },
         description: { type: String },
-        receiptUrl: { type: String },
         tags: [{ type: String }],
     },
     {
@@ -35,8 +29,6 @@ const ExpenseSchema: Schema = new Schema(
     }
 );
 
-// Index for faster searching
-ExpenseSchema.index({ userId: 1, date: -1 });
-ExpenseSchema.index({ tags: 1 });
+IncomeSchema.index({ userId: 1, date: -1 });
 
-export const Expense = mongoose.model<IExpenseDocument>("Expense", ExpenseSchema);
+export const Income = mongoose.model<IIncomeDocument>("Income", IncomeSchema);

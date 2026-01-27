@@ -5,12 +5,19 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { errorHandler } from "./core/middlewares/error.middleware.js";
 import expenseRoutes from "./modules/expense/expense.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
+import incomeRoutes from "./modules/income/income.routes.js";
+import path from "path";
+import { fileURLToPath } from "url";
 import { connectDB } from "./core/config/database.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 // Middleware
@@ -30,6 +37,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Swagger Config
 const swaggerOptions = {
@@ -50,6 +58,20 @@ const swaggerOptions = {
                 description: "Local (127.0.0.1)",
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
     apis: ["./src/modules/**/*.ts"],
 };
@@ -59,6 +81,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes
 app.use("/api/expenses", expenseRoutes);
+app.use("/api/income", incomeRoutes);
+app.use("/api/auth", userRoutes);
+app.use("/api/user", userRoutes);
 
 // Error Handling
 app.use(errorHandler);

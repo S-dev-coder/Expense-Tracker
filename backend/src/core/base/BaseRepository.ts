@@ -15,8 +15,12 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
         this.model = model;
     }
 
-    async findAll(): Promise<T[]> {
-        return await this.model.find().exec();
+    async findAll(filter: any = {}): Promise<T[]> {
+        return await this.model.find(filter).exec();
+    }
+
+    async findOne(filter: any): Promise<T | null> {
+        return await this.model.findOne(filter).exec();
     }
 
     async findById(id: string): Promise<T | null> {

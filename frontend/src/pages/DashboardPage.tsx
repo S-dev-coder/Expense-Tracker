@@ -1,0 +1,178 @@
+import React, { useState, useEffect } from "react";
+import api from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+import {
+    TrendingUp,
+    TrendingDown,
+    Wallet,
+    CreditCard,
+    ArrowUpRight,
+    ArrowDownRight,
+    Loader2,
+    Calendar
+} from "lucide-react";
+import { format } from "date-fns";
+import { Button } from "../components/ui/button";
+import { Link } from "react-router-dom";
+import { formatCurrency } from "../lib/currencyUtils";
+
+const DashboardPage: React.FC = () => {
+    const { user } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        totalBalance: 0,
+        totalIncome: 0,
+        totalExpenses: 0,
+        recentTransactions: [] as any[],
+    });
+
+    const fetchDashboardData = async () => {
+        setLoading(true);
+        try {
+            const [expensesRes, incomeRes] = await Promise.all([
+                api.get("/expenses"),
+                api.get("/income")
+            ]);
+
+            const expenses = expensesRes.data.data;
+            const incomes = incomeRes.data.data;
+
+            const totalExpenses = expenses.reduce((sum: number, item: any) => sum + item.amount, 0);
+            const totalIncome = incomes.reduce((sum: number, item: any) => sum + item.amount, 0);
+
+            // Combine and sort recent transactions
+            const combined = [
+                ...expenses.map((e: any) => ({ ...e, type: "expense" })),
+                ...incomes.map((i: any) => ({ ...i, type: "income" }))
+            ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 5);
+
+            setStats({
+                totalBalance: totalIncome - totalExpenses,
+                totalIncome,
+                totalExpenses,
+                recentTransactions: combined,
+            });
+        } catch (error) {
+            console.error("Failed to fetch dashboard data", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                <p className="text-muted-foreground animate-pulse text-lg font-medium">Crunching your numbers...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <div>
+                <h2 className="text-4xl font-black tracking-tight">Welcome back, {user?.name.split(" ")[0]}! 👋</h2>
+                <p className="text-muted-foreground mt-1 text-lg">Here's what's happening with your finances today.</p>
+            </div>
+
+            {/* Stats Overview */}
+            <div className="grid gap-6 md:grid-cols-3">
+                <div className="relative p-8 bg-primary text-primary-foreground rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/20">
+                    <div className="relative z-10">
+                        <p className="text-primary-foreground/70 font-bold uppercase tracking-widest text-xs">Total Balance</p>
+                        <h3 className="text-4xl font-black mt-2 tracking-tighter">{formatCurrency(stats.totalBalance, user?.preferences?.currency)}</h3>
+                        <div className="mt-6 flex items-center gap-2 text-sm font-bold bg-white/10 w-fit px-3 py-1.5 rounded-full">
+                            <Wallet className="w-4 h-4" />
+                            {user?.preferences?.currency || "USD"} Account
+                        </div>
+                    </div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                </div>
+
+                <div className="group p-8 bg-card border rounded-[2.5rem] hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-center justify-between">
+                        <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
+                            <TrendingUp className="w-6 h-6" />
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs mt-6">Total Income</p>
+                    <h3 className="text-3xl font-black mt-1 text-green-600 tracking-tighter">+{formatCurrency(stats.totalIncome, user?.preferences?.currency)}</h3>
+                </div>
+
+                <div className="group p-8 bg-card border rounded-[2.5rem] hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-center justify-between">
+                        <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                            <TrendingDown className="w-6 h-6" />
+                        </div>
+                        <ArrowDownRight className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs mt-6">Total Expenses</p>
+                    <h3 className="text-3xl font-black mt-1 text-red-500 tracking-tighter">-{formatCurrency(stats.totalExpenses, user?.preferences?.currency)}</h3>
+                </div>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-2">
+                {/* Recent Activity */}
+                <div className="p-8 bg-card border rounded-[2.5rem] space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-black">Recent Activity</h3>
+                        <Link to="/expenses" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">View All</Link>
+                    </div>
+
+                    <div className="space-y-4">
+                        {stats.recentTransactions.length === 0 ? (
+                            <p className="text-center py-12 text-muted-foreground font-medium italic">No transactions yet. Start tracking!</p>
+                        ) : (
+                            stats.recentTransactions.map((tx, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-4 bg-background/50 rounded-2xl hover:bg-background transition-colors group">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${tx.type === 'income' ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-500'}`}>
+                                            {tx.type === 'income' ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownRight className="w-6 h-6" />}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold">{tx.title}</p>
+                                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                                                <Calendar className="w-3 h-3" />
+                                                {format(new Date(tx.date), "MMM dd, yyyy")}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p className={`text-lg font-black tracking-tighter ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`}>
+                                        {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, user?.preferences?.currency)}
+                                    </p>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="p-8 bg-card border rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-6 relative overflow-hidden bg-gradient-to-br from-primary/5 to-transparent">
+                    <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center text-primary rotate-3">
+                        <CreditCard className="w-10 h-10" />
+                    </div>
+                    <div>
+                        <h3 className="text-2xl font-black tracking-tight">Stay Budget-Wise!</h3>
+                        <p className="text-muted-foreground mt-2 max-w-[300px] font-medium">Tracking your daily expenses helps you save more and spend smarter.</p>
+                    </div>
+                    <div className="flex gap-4">
+                        <Link to="/expenses">
+                            <Button className="px-6 py-6 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">Add Expense</Button>
+                        </Link>
+                        <Link to="/income">
+                            <Button variant="outline" className="px-6 py-6 rounded-2xl font-bold hover:bg-accent transition-colors">Add Income</Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DashboardPage;
