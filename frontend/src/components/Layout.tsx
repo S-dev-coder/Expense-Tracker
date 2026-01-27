@@ -2,7 +2,7 @@ import React from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./ui/button";
-import { LogOut, User, LayoutDashboard, Settings, CreditCard, TrendingUp } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Settings, CreditCard, TrendingUp, FolderTree, PieChart } from "lucide-react";
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
@@ -34,6 +34,14 @@ const Layout: React.FC = () => {
                     <Link to="/income" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <TrendingUp className="w-4 h-4 text-green-500" />
                         Income
+                    </Link>
+                    <Link to="/categories" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <FolderTree className="w-4 h-4 text-orange-500" />
+                        Categories
+                    </Link>
+                    <Link to="/budgets" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <PieChart className="w-4 h-4 text-blue-500" />
+                        Budgets
                     </Link>
                 </nav>
                 <div className="p-4 border-t space-y-2">

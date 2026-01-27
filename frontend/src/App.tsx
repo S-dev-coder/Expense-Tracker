@@ -11,6 +11,8 @@ import ProfilePage from "./pages/ProfilePage";
 import DashboardPage from "./pages/DashboardPage";
 import ExpensesPage from "./pages/ExpensesPage";
 import IncomePage from "./pages/IncomePage";
+import CategoriesPage from "./pages/CategoriesPage";
+import BudgetsPage from "./pages/BudgetsPage";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <Route path="/" element={<DashboardPage />} />
               <Route path="/expenses" element={<ExpensesPage />} />
               <Route path="/income" element={<IncomePage />} />
+              <Route path="/categories" element={<CategoriesPage />} />
+              <Route path="/budgets" element={<BudgetsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>

@@ -9,7 +9,10 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     Loader2,
-    Calendar
+    Calendar,
+    Target,
+    AlertCircle,
+    AlertTriangle
 } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "../components/ui/button";
@@ -25,17 +28,20 @@ const DashboardPage: React.FC = () => {
         totalExpenses: 0,
         recentTransactions: [] as any[],
     });
+    const [budgetStats, setBudgetStats] = useState<any>(null);
 
     const fetchDashboardData = async () => {
         setLoading(true);
         try {
-            const [expensesRes, incomeRes] = await Promise.all([
+            const [expensesRes, incomeRes, budgetRes] = await Promise.all([
                 api.get("/expenses"),
-                api.get("/income")
+                api.get("/income"),
+                api.get("/budgets/stats")
             ]);
 
             const expenses = expensesRes.data.data;
             const incomes = incomeRes.data.data;
+            const budgetData = budgetRes.data.data;
 
             const totalExpenses = expenses.reduce((sum: number, item: any) => sum + item.amount, 0);
             const totalIncome = incomes.reduce((sum: number, item: any) => sum + item.amount, 0);
@@ -53,6 +59,7 @@ const DashboardPage: React.FC = () => {
                 totalExpenses,
                 recentTransactions: combined,
             });
+            setBudgetStats(budgetData);
         } catch (error) {
             console.error("Failed to fetch dashboard data", error);
         } finally {
@@ -116,6 +123,68 @@ const DashboardPage: React.FC = () => {
                     <h3 className="text-3xl font-black mt-1 text-red-500 tracking-tighter">-{formatCurrency(stats.totalExpenses, user?.preferences?.currency)}</h3>
                 </div>
             </div>
+
+            {/* Budget Progress */}
+            {budgetStats && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="p-8 bg-card border rounded-[2.5rem] space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
+                                <Target className="w-6 h-6 text-primary" /> Monthly Budget
+                            </h2>
+                            <span className="text-sm font-bold text-muted-foreground">
+                                {budgetStats.percentage.toFixed(1)}% Used
+                            </span>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="h-4 bg-accent rounded-full overflow-hidden">
+                                <div
+                                    className={`h-full transition-all duration-1000 ${budgetStats.percentage > 90 ? 'bg-red-500' : budgetStats.percentage > 75 ? 'bg-orange-500' : 'bg-primary'
+                                        }`}
+                                    style={{ width: `${Math.min(budgetStats.percentage, 100)}%` }}
+                                />
+                            </div>
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Spent</p>
+                                    <p className="text-xl font-black">{formatCurrency(budgetStats.totalSpent, user?.preferences?.currency)}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Budget</p>
+                                    <p className="text-xl font-black opacity-40">{formatCurrency(budgetStats.totalLimit, user?.preferences?.currency)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-8 bg-card border rounded-[2.5rem] space-y-6">
+                        <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
+                            <AlertCircle className="w-6 h-6 text-orange-500" /> Budget Alerts
+                        </h2>
+                        <div className="space-y-3">
+                            {budgetStats.totalLimit > budgetStats.totalIncome && (
+                                <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center gap-4 text-orange-600">
+                                    <AlertTriangle className="w-5 h-5 shrink-0" />
+                                    <p className="text-sm font-bold">Caution: Your budget exceeds your total income!</p>
+                                </div>
+                            )}
+                            {budgetStats.percentage > 90 ? (
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-600">
+                                    <AlertCircle className="w-5 h-5 shrink-0" />
+                                    <p className="text-sm font-bold">Critical: You've used over 90% of your total budget!</p>
+                                </div>
+                            ) : budgetStats.percentage > 75 ? (
+                                <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center gap-4 text-orange-600">
+                                    <AlertCircle className="w-5 h-5 shrink-0" />
+                                    <p className="text-sm font-bold">Warning: You've used over 75% of your total budget.</p>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground font-medium">Your spending is well within limits. Keep it up!</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="grid gap-8 lg:grid-cols-2">
                 {/* Recent Activity */}

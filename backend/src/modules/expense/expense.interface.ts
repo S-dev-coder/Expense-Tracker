@@ -5,7 +5,8 @@ export interface IExpense {
     userId: string;
     title: string;
     amount: number;
-    category: "Food" | "Transport" | "Shopping" | "Bills" | "Entertainment" | "Health" | "Education" | "Other";
+    category: string;
+    categoryId?: string;
     date: Date;
     paymentMethod: PaymentMethod;
     description?: string;

@@ -20,6 +20,11 @@ export class ExpenseController {
                 data.tags = data.tags.split(",").map((t: string) => t.trim());
             }
 
+            // Sanitize categoryId
+            if (data.categoryId === "" || data.categoryId === "undefined") {
+                delete data.categoryId;
+            }
+
             const expense = await this.service.create(req.user.id, data);
             res.status(201).json(ApiResponse.success(expense, "Expense added successfully", 201));
         } catch (error) {
@@ -47,7 +52,21 @@ export class ExpenseController {
 
     update = async (req: any, res: Response, next: NextFunction) => {
         try {
-            const expense = await this.service.update(req.user.id, req.params.id, req.body);
+            const data = { ...req.body };
+            if (req.file) {
+                data.receiptUrl = `/uploads/receipts/${req.file.filename}`;
+            }
+            // Parse tags if they come as a string
+            if (data.tags && typeof data.tags === "string") {
+                data.tags = data.tags.split(",").map((t: string) => t.trim());
+            }
+
+            // Sanitize categoryId
+            if (data.categoryId === "" || data.categoryId === "undefined") {
+                delete data.categoryId;
+            }
+
+            const expense = await this.service.update(req.user.id, req.params.id, data);
             res.status(200).json(ApiResponse.success(expense, "Expense updated successfully"));
         } catch (error) {
             next(error);

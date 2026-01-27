@@ -7,6 +7,8 @@ import { errorHandler } from "./core/middlewares/error.middleware.js";
 import expenseRoutes from "./modules/expense/expense.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import incomeRoutes from "./modules/income/income.routes.js";
+import categoryRoutes from "./modules/category/category.routes.js";
+import budgetRoutes from "./modules/budget/budget.routes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./core/config/database.js";
@@ -82,6 +84,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Routes
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/income", incomeRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/budgets", budgetRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/api/user", userRoutes);
 

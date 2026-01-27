@@ -16,11 +16,13 @@ interface AddExpenseModalProps {
 const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ isOpen, onClose, onSuccess, editData }) => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
     const [file, setFile] = useState<File | null>(null);
     const initialFormState = {
         title: "",
         amount: "",
-        category: "Food",
+        category: "",
+        categoryId: "",
         date: new Date().toISOString().split("T")[0],
         paymentMethod: "Cash",
         description: "",
@@ -29,11 +31,28 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ isOpen, onClose, onSu
     const [formData, setFormData] = useState(initialFormState);
 
     React.useEffect(() => {
+        const fetchCategories = async () => {
+            const res = await api.get("/categories");
+            setCategories(res.data.data);
+            if (!editData && res.data.data.length > 0) {
+                setFormData(prev => ({
+                    ...prev,
+                    category: res.data.data[0].name,
+                    categoryId: res.data.data[0].id
+                }));
+            }
+        };
+
+        if (isOpen) {
+            fetchCategories();
+        }
+
         if (editData) {
             setFormData({
                 title: editData.title || "",
                 amount: editData.amount?.toString() || "",
-                category: editData.category || "Food",
+                category: editData.category || "",
+                categoryId: editData.categoryId || "",
                 date: editData.date ? new Date(editData.date).toISOString().split("T")[0] : initialFormState.date,
                 paymentMethod: editData.paymentMethod || "Cash",
                 description: editData.description || "",
@@ -138,18 +157,20 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ isOpen, onClose, onSu
                                 <Tag className="w-4 h-4 text-primary" /> Category
                             </label>
                             <select
-                                value={formData.category}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                value={formData.categoryId || formData.category}
+                                onChange={(e) => {
+                                    const selected = categories.find(c => c.id === e.target.value || c.name === e.target.value);
+                                    setFormData({
+                                        ...formData,
+                                        categoryId: selected?.userId ? selected.id : "",
+                                        category: selected?.name || e.target.value
+                                    });
+                                }}
                                 className="w-full h-11 px-3 bg-background border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
                             >
-                                <option value="Food">Food</option>
-                                <option value="Transport">Transport</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Bills">Bills</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Health">Health</option>
-                                <option value="Education">Education</option>
-                                <option value="Other">Other</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="space-y-1">

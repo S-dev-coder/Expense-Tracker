@@ -8,11 +8,8 @@ const ExpenseSchema: Schema = new Schema(
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         title: { type: String, required: true },
         amount: { type: Number, required: true },
-        category: {
-            type: String,
-            required: true,
-            enum: ["Food", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Other"]
-        },
+        category: { type: String, required: true },
+        categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
         date: { type: Date, required: true },
         paymentMethod: {
             type: String,
