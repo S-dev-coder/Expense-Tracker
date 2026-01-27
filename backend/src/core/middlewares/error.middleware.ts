@@ -15,6 +15,8 @@ export const errorHandler = (
         message = err.message || "Internal Server Error";
     }
 
+    console.error(`[Error Handler] ${err.stack || err.message}`);
+
     const response = ApiResponse.error(message, statusCode);
 
     res.status(statusCode).json(response);

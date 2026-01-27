@@ -9,14 +9,26 @@ import { connectDB } from "./core/config/database.js";
 
 dotenv.config();
 
-// Connect to Database
-connectDB();
-
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+// Middleware
+const corsOptions = {
+    origin: ["http://localhost:5173", "http://localhost:5000", "http://127.0.0.1:5173", "http://127.0.0.1:5000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// Logging Middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+    next();
+});
+
 app.use(express.json());
 
 // Swagger Config
@@ -30,7 +42,12 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: `http://localhost:${port}`,
+                url: "http://localhost:5000",
+                description: "Local (localhost)",
+            },
+            {
+                url: "http://127.0.0.1:5000",
+                description: "Local (127.0.0.1)",
             },
         ],
     },
@@ -46,9 +63,22 @@ app.use("/api/expenses", expenseRoutes);
 // Error Handling
 app.use(errorHandler);
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
-});
+const startServer = async () => {
+    try {
+        // Connect to Database
+        await connectDB();
+        console.log("Database initialization complete");
+
+        app.listen(port, () => {
+            console.log(`Server running at http://localhost:${port}`);
+            console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
+        });
+    } catch (error) {
+        console.error("Failed to start server due to database connection error:", error);
+        process.exit(1);
+    }
+};
+
+startServer();
 
 export default app;
