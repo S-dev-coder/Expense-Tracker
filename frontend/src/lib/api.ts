@@ -1,5 +1,9 @@
 import axios from "axios";
 
+/**
+ * Centralized Axios instance for all API calls.
+ * Includes baseURL and default JSON headers.
+ */
 const api = axios.create({
     baseURL: "http://localhost:5000/api",
     headers: {

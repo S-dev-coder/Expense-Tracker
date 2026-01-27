@@ -13,6 +13,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./core/config/database.js";
 
+/**
+ * Main application entry point.
+ * Configures global middlewares, API routes, Swagger documentation, and database connection.
+ */
 dotenv.config();
 
 const app = express();
@@ -92,6 +96,10 @@ app.use("/api/user", userRoutes);
 // Error Handling
 app.use(errorHandler);
 
+/**
+ * Initialize database connection and start listening for requests.
+ * Ensures the app doesn't start without a valid database link.
+ */
 const startServer = async () => {
     try {
         // Connect to Database

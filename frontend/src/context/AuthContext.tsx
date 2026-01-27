@@ -27,6 +27,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
+    /**
+     * Initial authentication check on application load.
+     * Verifies stored JWT token and fetches user profile.
+     */
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem("token");
@@ -43,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkAuth();
     }, []);
 
-    // Theme synchronization
+    // Automatically apply theme class to document element based on user preferences
     useEffect(() => {
         if (user?.preferences?.theme === "dark") {
             document.documentElement.classList.add("dark");
@@ -52,6 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [user?.preferences?.theme]);
 
+    /**
+     * Authenticate user with credentials and store token.
+     */
     const login = async (credentials: any) => {
         const res = await api.post("/auth/login", credentials);
         const { user, token } = res.data.data;
@@ -59,6 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(user);
     };
 
+    /**
+     * Register a new user and automatically log them in.
+     */
     const register = async (userData: any) => {
         const res = await api.post("/auth/register", userData);
         const { user, token } = res.data.data;
@@ -66,11 +76,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(user);
     };
 
+    /**
+     * Clear session and sensitive data.
+     */
     const logout = () => {
         localStorage.removeItem("token");
         setUser(null);
     };
 
+    /**
+     * Persist user profile updates and sync local state.
+     */
     const updateProfile = async (userData: any) => {
         const res = await api.put("/user/profile", userData);
         setUser(res.data.data);
