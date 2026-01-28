@@ -105,7 +105,7 @@ const IncomePage: React.FC = () => {
                             className={`h-11 rounded-xl px-4 gap-2 ${isFilterOpen ? "bg-accent" : ""}`}
                         >
                             <Filter className="w-4 h-4" />
-                            Filters
+                            <span className="hidden sm:inline">Filters</span>
                         </Button>
                     </div>
 
@@ -161,11 +161,17 @@ const IncomePage: React.FC = () => {
                     <div className="grid gap-4">
                         {incomes.map((income) => (
                             <div key={income.id} className="group p-4 bg-card border rounded-2xl hover:shadow-md transition-all flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4 flex-1">
+                                <div
+                                    onClick={() => {
+                                        setEditIncome(income);
+                                        setIsModalOpen(true);
+                                    }}
+                                    className="flex items-center gap-4 flex-1 cursor-pointer md:cursor-default"
+                                >
                                     <div className="w-12 h-12 rounded-xl bg-green-600/5 flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
                                         <Wallet className="w-6 h-6" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <h4 className="font-bold">{income.title}</h4>
                                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
                                             <span className="flex items-center gap-1">
@@ -178,30 +184,28 @@ const IncomePage: React.FC = () => {
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="text-right flex items-center gap-6">
                                     <p className="text-xl font-black text-green-600">+{formatCurrency(income.amount, user?.preferences?.currency)}</p>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => {
-                                                setEditIncome(income);
-                                                setIsModalOpen(true);
-                                            }}
-                                            className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleDelete(income.id)}
-                                            className="h-10 w-10 text-destructive hover:bg-destructive/10 rounded-xl"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
-                                        </Button>
-                                    </div>
+                                </div>
+                                <div className="hidden md:flex items-center gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => {
+                                            setEditIncome(income);
+                                            setIsModalOpen(true);
+                                        }}
+                                        className="h-10 w-10 text-primary hover:bg-primary/10 rounded-xl"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleDelete(income.id)}
+                                        className="h-10 w-10 text-destructive hover:bg-destructive/10 rounded-xl"
+                                    >
+                                        <Trash2 className="w-5 h-5" />
+                                    </Button>
                                 </div>
                             </div>
                         ))}

@@ -128,7 +128,7 @@ const ExpensesPage: React.FC = () => {
                                 className="h-11 rounded-xl px-4 gap-2 animate-in zoom-in-95"
                             >
                                 <Trash2 className="w-4 h-4" />
-                                Delete ({selectedIds.length})
+                                <span className="hidden sm:inline">Delete</span> ({selectedIds.length})
                             </Button>
                         )}
                         <Button
@@ -137,7 +137,7 @@ const ExpensesPage: React.FC = () => {
                             className={`h-11 rounded-xl px-4 gap-2 ${isFilterOpen ? "bg-accent" : ""}`}
                         >
                             <Filter className="w-4 h-4" />
-                            Filters
+                            <span className="hidden sm:inline">Filters</span>
                         </Button>
                     </div>
 
@@ -219,39 +219,50 @@ const ExpensesPage: React.FC = () => {
                                     <input
                                         type="checkbox"
                                         checked={selectedIds.includes(expense.id)}
-                                        onChange={() => toggleSelect(expense.id)}
+                                        onChange={(e) => {
+                                            e.stopPropagation();
+                                            toggleSelect(expense.id);
+                                        }}
                                         className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                                     />
-                                    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                        <CreditCard className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold">{expense.title}</h4>
-                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="w-3 h-3" />
-                                                {format(new Date(expense.date), "MMM dd, yyyy")}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <Tag className="w-3 h-3" />
-                                                {expense.category}
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] uppercase font-bold tracking-wider">
-                                                {expense.paymentMethod}
-                                            </span>
+                                    <div
+                                        onClick={() => {
+                                            setEditExpense(expense);
+                                            setIsModalOpen(true);
+                                        }}
+                                        className="flex items-center gap-4 flex-1 cursor-pointer md:cursor-default"
+                                    >
+                                        <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                            <CreditCard className="w-6 h-6" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold">{expense.title}</h4>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {format(new Date(expense.date), "MMM dd, yyyy")}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Tag className="w-3 h-3" />
+                                                    {expense.category}
+                                                </span>
+                                                <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] uppercase font-bold tracking-wider">
+                                                    {expense.paymentMethod}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-xl font-black text-red-500">-{formatCurrency(expense.amount, user?.preferences?.currency)}</p>
+                                            {expense.receiptUrl && (
+                                                <button className="text-xs font-medium text-primary hover:underline flex items-center gap-1 justify-end mt-1">
+                                                    <ImageIcon className="w-3 h-3" />
+                                                    Receipt
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right flex items-center gap-6">
-                                    <div>
-                                        <p className="text-xl font-black text-red-500">-{formatCurrency(expense.amount, user?.preferences?.currency)}</p>
-                                        {expense.receiptUrl && (
-                                            <button className="text-xs font-medium text-primary hover:underline flex items-center gap-1 justify-end mt-1">
-                                                <ImageIcon className="w-3 h-3" />
-                                                Receipt
-                                            </button>
-                                        )}
-                                    </div>
+                                <div className="hidden md:flex items-center gap-2">
                                     <Button
                                         variant="ghost"
                                         size="icon"
