@@ -3,6 +3,8 @@ import api from "../lib/api";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 import { Plus, Trash2, Edit2, Loader2, FolderTree, Palette } from "lucide-react";
+import { PageHeader } from "../components/ui/PageHeader";
+import { LayoutWrapper } from "../components/ui/LayoutWrapper";
 
 interface Category {
     id: string;
@@ -86,53 +88,56 @@ const CategoriesPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tighter">Categories</h1>
-                    <p className="text-muted-foreground font-medium">Personalize your expense tracking.</p>
-                </div>
-                <Button onClick={() => setIsModalOpen(true)} className="rounded-2xl h-12 px-6 font-bold shadow-lg shadow-primary/20 gap-2">
-                    <Plus className="w-5 h-5" /> Add Category
-                </Button>
-            </div>
+        <div className="animate-in fade-in duration-500">
+            <PageHeader
+                title="Categories"
+                description="Personalize your expense tracking."
+                action={
+                    <Button onClick={() => setIsModalOpen(true)} className="rounded-2xl h-12 px-6 font-bold shadow-lg shadow-primary/20 gap-2">
+                        <Plus className="w-5 h-5" /> Add Category
+                    </Button>
+                }
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {categories.map((cat) => (
-                    <div key={cat.id} className="group relative p-6 bg-card border rounded-[2rem] hover:shadow-xl transition-all duration-300 overflow-hidden">
-                        <div
-                            className="absolute top-0 right-0 w-24 h-24 opacity-5 group-hover:opacity-10 transition-opacity"
-                            style={{ backgroundColor: cat.color, borderRadius: '0 0 0 100%' }}
-                        />
-                        <div className="flex items-start justify-between relative z-10">
-                            <div className="space-y-3">
-                                <div
-                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner"
-                                    style={{ backgroundColor: cat.color + '20', color: cat.color }}
-                                >
-                                    {cat.icon}
+            <LayoutWrapper columns={1}>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {categories.map((cat) => (
+                        <div key={cat.id} className="group relative p-6 bg-card border rounded-[2rem] hover:shadow-xl transition-all duration-300 overflow-hidden">
+                            <div
+                                className="absolute top-0 right-0 w-24 h-24 opacity-5 group-hover:opacity-10 transition-opacity"
+                                style={{ backgroundColor: cat.color, borderRadius: '0 0 0 100%' }}
+                            />
+                            <div className="flex items-start justify-between relative z-10">
+                                <div className="space-y-3">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner"
+                                        style={{ backgroundColor: cat.color + '20', color: cat.color }}
+                                    >
+                                        {cat.icon}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold">{cat.name}</h3>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                            {cat.userId ? "Custom" : "System Default"}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-lg font-bold">{cat.name}</h3>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                                        {cat.userId ? "Custom" : "System Default"}
-                                    </p>
-                                </div>
+                                {cat.userId && (
+                                    <div className="flex flex-col gap-2">
+                                        <button onClick={() => openEdit(cat)} className="p-2 hover:bg-accent rounded-xl text-muted-foreground hover:text-primary transition-colors">
+                                            <Edit2 className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => handleDelete(cat.id)} className="p-2 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-colors">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                            {cat.userId && (
-                                <div className="flex flex-col gap-2">
-                                    <button onClick={() => openEdit(cat)} className="p-2 hover:bg-accent rounded-xl text-muted-foreground hover:text-primary transition-colors">
-                                        <Edit2 className="w-4 h-4" />
-                                    </button>
-                                    <button onClick={() => handleDelete(cat.id)} className="p-2 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-colors">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            </LayoutWrapper>
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">

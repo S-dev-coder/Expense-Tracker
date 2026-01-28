@@ -3,6 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 import { User, Settings, Globe, Moon, Sun, Trash2, Loader2, Save } from "lucide-react";
+import { PageHeader } from "../components/ui/PageHeader";
+import { LayoutWrapper } from "../components/ui/LayoutWrapper";
 
 const ProfilePage: React.FC = () => {
     const { user, updateProfile, logout } = useAuth();
@@ -48,15 +50,15 @@ const ProfilePage: React.FC = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            <div>
-                <h2 className="text-3xl font-bold tracking-tight">Profile & Settings</h2>
-                <p className="text-muted-foreground">Manage your account information and preferences</p>
-            </div>
+        <div className="animate-in fade-in duration-500">
+            <PageHeader
+                title="Profile & Settings"
+                description="Manage your account information and preferences"
+            />
 
-            <div className="grid gap-8 md:grid-cols-3">
-                {/* Profile Section */}
-                <div className="md:col-span-2 space-y-6">
+            <LayoutWrapper columns={2}>
+
+                <div className="space-y-6">
                     <section className="p-6 bg-card border rounded-xl shadow-sm space-y-4">
                         <div className="flex items-center gap-2 font-semibold">
                             <User className="w-5 h-5 text-primary" />
@@ -183,7 +185,7 @@ const ProfilePage: React.FC = () => {
                         </Button>
                     </section>
                 </div>
-            </div>
+            </LayoutWrapper>
         </div>
     );
 };

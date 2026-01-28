@@ -5,6 +5,8 @@ import { formatCurrency } from "../lib/currencyUtils";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 import { Loader2, Save, PieChart, Target, AlertTriangle } from "lucide-react";
+import { PageHeader } from "../components/ui/PageHeader";
+import { LayoutWrapper } from "../components/ui/LayoutWrapper";
 
 interface Category {
     id: string;
@@ -97,35 +99,35 @@ const BudgetsPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tighter">Monthly Budget</h1>
-                    <p className="text-muted-foreground font-medium">Plan your spending for {new Date(year, month - 1).toLocaleString('default', { month: 'long' })} {year}.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <select
-                        value={month}
-                        onChange={(e) => setMonth(parseInt(e.target.value))}
-                        className="bg-card border rounded-xl px-4 h-11 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    >
-                        {Array.from({ length: 12 }, (_, i) => (
-                            <option key={i + 1} value={i + 1}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
-                        ))}
-                    </select>
-                    <select
-                        value={year}
-                        onChange={(e) => setYear(parseInt(e.target.value))}
-                        className="bg-card border rounded-xl px-4 h-11 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    >
-                        {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
-                </div>
-            </div>
+        <div className="animate-in fade-in duration-500">
+            <PageHeader
+                title="Monthly Budget"
+                description={`Plan your spending for ${new Date(year, month - 1).toLocaleString('default', { month: 'long' })} ${year}.`}
+                action={
+                    <div className="flex items-center gap-3">
+                        <select
+                            value={month}
+                            onChange={(e) => setMonth(parseInt(e.target.value))}
+                            className="bg-card border rounded-xl px-4 h-11 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        >
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <option key={i + 1} value={i + 1}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={year}
+                            onChange={(e) => setYear(parseInt(e.target.value))}
+                            className="bg-card border rounded-xl px-4 h-11 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        >
+                            {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                    </div>
+                }
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <LayoutWrapper columns={2}>
                 {/* Total Budget Setting */}
-                <div className="lg:col-span-1 space-y-6">
+                <div className="space-y-6">
                     <div className="p-8 bg-primary text-primary-foreground rounded-[2.5rem] shadow-2xl shadow-primary/20 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-20">
                             <Target className="w-16 h-16" />
@@ -174,7 +176,7 @@ const BudgetsPage: React.FC = () => {
                 </div>
 
                 {/* Category Budgets */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
                             <PieChart className="w-6 h-6 text-primary" /> Category-wise Limits
@@ -215,7 +217,7 @@ const BudgetsPage: React.FC = () => {
                         ))}
                     </div>
                 </div>
-            </div>
+            </LayoutWrapper>
         </div>
     );
 };
