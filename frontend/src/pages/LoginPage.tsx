@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
-import { LogIn, Loader2 } from "lucide-react";
+import { LogIn, Loader2, Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -19,6 +19,7 @@ const LoginPage: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const {
         register,
@@ -60,7 +61,7 @@ const LoginPage: React.FC = () => {
                             <label className="text-sm font-medium">Email</label>
                             <input
                                 {...register("email")}
-                                className="w-full h-10 px-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                className="w-full h-10 px-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                 placeholder="name@example.com"
                             />
                             {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -68,12 +69,25 @@ const LoginPage: React.FC = () => {
 
                         <div className="space-y-1">
                             <label className="text-sm font-medium">Password</label>
-                            <input
-                                type="password"
-                                {...register("password")}
-                                className="w-full h-10 px-3 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    {...register("password")}
+                                    className="w-full h-10 pl-3 pr-10 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    placeholder="••••••••"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors focus:outline-none p-1"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="w-4 h-4" />
+                                    ) : (
+                                        <Eye className="w-4 h-4" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
                         </div>
 
