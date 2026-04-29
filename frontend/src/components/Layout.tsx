@@ -44,52 +44,56 @@ const Layout: React.FC = () => {
 
     return (
         <div className="flex min-h-screen bg-background font-sans antialiased text-foreground overflow-x-hidden">
-            {/* Desktop Sidebar - sticky so it doesn't scroll with page content */}
-            <aside className={`border-r bg-card hidden md:flex flex-col transition-all duration-300 ease-in-out relative sticky top-0 h-screen overflow-y-auto overflow-x-hidden ${isCollapsed ? 'w-16' : 'w-64'}`}>
+            {/* Desktop Sidebar - position:fixed, always stays in place */}
+            <aside className={`border-r bg-card hidden md:flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 ease-in-out z-40 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+                {/* Collapse toggle */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-3 top-20 bg-card border rounded-full p-1 hover:bg-accent z-10 hidden md:block"
+                    className="absolute end-0 top-20 translate-x-full bg-card border rounded-e-lg p-1 hover:bg-accent z-10"
                 >
                     {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
                 </button>
 
-                <div className={`p-6 overflow-hidden ${isCollapsed ? 'items-center px-4' : ''}`}>
-                    <h1 className={`text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent origin-left transition-all duration-300 ${isCollapsed ? 'scale-0 w-0' : 'scale-100'}`}>
-                        ExpenseTracker
-                    </h1>
-                    {isCollapsed && <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary">ET</div>}
-                </div>
-
-                <nav className="flex-1 px-3 space-y-1">
-                    <NavItems />
-                </nav>
-
-                <div className={`p-4 border-t space-y-2 ${isCollapsed ? 'items-center px-2' : ''}`}>
-                    <div className={`flex items-center gap-3 px-3 py-2 ${isCollapsed ? 'justify-center px-0' : ''}`}>
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <User className="w-4 h-4 text-primary" />
-                        </div>
-                        {!isCollapsed && (
-                            <div className="flex-1 overflow-hidden">
-                                <p className="text-sm font-medium truncate">{user?.name}</p>
-                                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                            </div>
-                        )}
+                {/* Scrollable sidebar content */}
+                <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
+                    <div className={`p-6 overflow-hidden ${isCollapsed ? 'items-center px-4' : ''}`}>
+                        <h1 className={`text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent origin-left transition-all duration-300 ${isCollapsed ? 'scale-0 w-0' : 'scale-100'}`}>
+                            ExpenseTracker
+                        </h1>
+                        {isCollapsed && <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary">ET</div>}
                     </div>
-                    <Link to="/profile" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors w-full ${isCollapsed ? 'justify-center' : ''}`}>
-                        <Settings className="w-4 h-4 shrink-0" />
-                        {!isCollapsed && <span>Settings</span>}
-                    </Link>
-                    <Button variant="ghost" className={`w-full justify-start gap-3 h-9 text-red-500 hover:text-red-600 hover:bg-red-500/10 ${isCollapsed ? 'justify-center px-0' : ''}`} onClick={handleLogout}>
-                        <LogOut className="w-4 h-4 shrink-0" />
-                        {!isCollapsed && <span>Logout</span>}
-                    </Button>
+
+                    <nav className="flex-1 px-3 space-y-1">
+                        <NavItems />
+                    </nav>
+
+                    <div className={`p-4 border-t space-y-2 ${isCollapsed ? 'items-center px-2' : ''}`}>
+                        <div className={`flex items-center gap-3 px-3 py-2 ${isCollapsed ? 'justify-center px-0' : ''}`}>
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                <User className="w-4 h-4 text-primary" />
+                            </div>
+                            {!isCollapsed && (
+                                <div className="flex-1 overflow-hidden">
+                                    <p className="text-sm font-medium truncate">{user?.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                                </div>
+                            )}
+                        </div>
+                        <Link to="/profile" className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors w-full ${isCollapsed ? 'justify-center' : ''}`}>
+                            <Settings className="w-4 h-4 shrink-0" />
+                            {!isCollapsed && <span>Settings</span>}
+                        </Link>
+                        <Button variant="ghost" className={`w-full justify-start gap-3 h-9 text-red-500 hover:text-red-600 hover:bg-red-500/10 ${isCollapsed ? 'justify-center px-0' : ''}`} onClick={handleLogout}>
+                            <LogOut className="w-4 h-4 shrink-0" />
+                            {!isCollapsed && <span>Logout</span>}
+                        </Button>
+                    </div>
                 </div>
             </aside>
 
             {/* Mobile Drawer */}
             {isMobileOpen && (
-                <div className="fixed inset-0 z-50 md:hidden animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-50 md:hidden">
                     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
                     <aside className="absolute inset-y-0 left-0 w-full max-w-xs bg-card border-r flex flex-col animate-in slide-in-from-left duration-300">
                         <div className="p-6 flex items-center justify-between">
@@ -126,12 +130,12 @@ const Layout: React.FC = () => {
                 </div>
             )}
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0">
+            {/* Main Content - ml-64 accounts for fixed sidebar on desktop */}
+            <div className="flex-1 flex flex-col min-w-0 md:ml-64">
                 {/* Mobile Header - sticky at top */}
-                <header className="h-16 border-b flex items-center justify-between px-6 md:hidden bg-card/50 backdrop-blur-md sticky top-0 z-40">
+                <header className="h-16 border-b flex items-center justify-between px-6 md:hidden bg-card/50 backdrop-blur-md sticky top-0 z-30">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => setIsMobileOpen(true)} className="md:hidden">
+                        <Button variant="ghost" size="icon" onClick={() => setIsMobileOpen(true)}>
                             <Menu className="w-6 h-6" />
                         </Button>
                         <h1 className="text-lg font-bold">ExpenseTracker</h1>
@@ -140,7 +144,8 @@ const Layout: React.FC = () => {
                         <User className="w-4 h-4 text-primary" />
                     </div>
                 </header>
-                {/* Scrollable content area */}
+
+                {/* Scrollable page content */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8">
                     <Outlet />
                 </div>
@@ -168,7 +173,7 @@ const Layout: React.FC = () => {
                         <span className="text-[10px] font-bold">Me</span>
                     </Link>
                 </nav>
-            </main>
+            </div>
         </div>
     );
 };
