@@ -19,7 +19,7 @@ const Layout: React.FC = () => {
 
     const NavItems = () => (
         <>
-            <Link to="/" onClick={() => setIsMobileOpen(false)} className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${location.pathname === "/" ? "bg-accent text-primary" : "hover:bg-accent"}`}>
+            <Link to="/dashboard" onClick={() => setIsMobileOpen(false)} className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${location.pathname === "/dashboard" ? "bg-accent text-primary" : "hover:bg-accent"}`}>
                 <LayoutDashboard className="w-4 h-4 shrink-0" />
                 {!isCollapsed && <span>Dashboard</span>}
             </Link>
@@ -145,7 +145,7 @@ const Layout: React.FC = () => {
 
                 {/* Mobile Bottom Navigation */}
                 <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-card/80 backdrop-blur-lg border rounded-2xl flex items-center justify-around px-2 shadow-2xl z-50">
-                    <Link to="/" className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${location.pathname === "/" ? "text-primary scale-110" : "text-muted-foreground"}`}>
+                    <Link to="/dashboard" className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${location.pathname === "/dashboard" ? "text-primary scale-110" : "text-muted-foreground"}`}>
                         <LayoutDashboard className="w-5 h-5" />
                         <span className="text-[10px] font-bold">Home</span>
                     </Link>

@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
         try {
             await login(data);
             toast.success("Login successful!");
-            navigate("/");
+            navigate("/dashboard");
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
         } finally {
