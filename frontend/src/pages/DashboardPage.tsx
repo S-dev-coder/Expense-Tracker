@@ -129,8 +129,8 @@ const DashboardPage: React.FC = () => {
             </LayoutWrapper>
 
             <LayoutWrapper columns={2}>
-                {/* Budget Progress */}
-                {budgetStats && (
+                {/* Budget Progress / Empty State */}
+                {budgetStats ? (
                     <div className="space-y-6 flex flex-col h-full">
                         <div className="p-8 bg-card border rounded-[2.5rem] space-y-6 flex-1">
                             <div className="flex items-center justify-between">
@@ -188,6 +188,17 @@ const DashboardPage: React.FC = () => {
                                 )}
                             </div>
                         </div>
+                    </div>
+                ) : (
+                    <div className="p-8 bg-card border rounded-[2.5rem] space-y-4 flex-1 flex flex-col items-center justify-center text-center">
+                        <div className="w-16 h-16 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mb-2">
+                            <Target className="w-8 h-8" />
+                        </div>
+                        <h2 className="text-xl font-black">No Budget Set</h2>
+                        <p className="text-muted-foreground text-sm max-w-[280px]">Set a monthly budget to track your spending and get alerts.</p>
+                        <Link to="/budgets">
+                            <Button className="mt-2 rounded-2xl font-bold shadow-lg shadow-primary/20">Set Up Budget</Button>
+                        </Link>
                     </div>
                 )}
 

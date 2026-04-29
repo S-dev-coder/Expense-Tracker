@@ -43,9 +43,9 @@ const Layout: React.FC = () => {
     );
 
     return (
-        <div className="flex min-h-screen bg-background font-sans antialiased text-foreground">
-            {/* Desktop Sidebar */}
-            <aside className={`border-r bg-card hidden md:flex flex-col transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-16' : 'w-64'}`}>
+        <div className="flex min-h-screen bg-background font-sans antialiased text-foreground overflow-x-hidden">
+            {/* Desktop Sidebar - sticky so it doesn't scroll with page content */}
+            <aside className={`border-r bg-card hidden md:flex flex-col transition-all duration-300 ease-in-out relative sticky top-0 h-screen overflow-y-auto overflow-x-hidden ${isCollapsed ? 'w-16' : 'w-64'}`}>
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="absolute -right-3 top-20 bg-card border rounded-full p-1 hover:bg-accent z-10 hidden md:block"
@@ -127,7 +127,8 @@ const Layout: React.FC = () => {
             )}
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <main className="flex-1 flex flex-col min-w-0">
+                {/* Mobile Header - sticky at top */}
                 <header className="h-16 border-b flex items-center justify-between px-6 md:hidden bg-card/50 backdrop-blur-md sticky top-0 z-40">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" onClick={() => setIsMobileOpen(true)} className="md:hidden">
@@ -139,11 +140,12 @@ const Layout: React.FC = () => {
                         <User className="w-4 h-4 text-primary" />
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto p-4 md:p-8 pb-32 md:pb-8">
+                {/* Scrollable content area */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8">
                     <Outlet />
                 </div>
 
-                {/* Mobile Bottom Navigation */}
+                {/* Mobile Bottom Navigation - fixed at bottom */}
                 <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-card/80 backdrop-blur-lg border rounded-2xl flex items-center justify-around px-2 shadow-2xl z-50">
                     <Link to="/dashboard" className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${location.pathname === "/dashboard" ? "text-primary scale-110" : "text-muted-foreground"}`}>
                         <LayoutDashboard className="w-5 h-5" />
